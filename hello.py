@@ -56,6 +56,7 @@ class HelloWorld(Example):
         self.vao = self.ctx.simple_vertex_array(self.prog, self.vbo, 'in_vert')
 
     def render(self, time, frame_time):
+        # self.prog['iTime'] = 1.0
         self.prog['iTime'] = time
         self.ctx.clear(1.0, 1.0, 1.0)
         self.vao.render()

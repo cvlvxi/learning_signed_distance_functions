@@ -64,25 +64,33 @@ vec3 calcNormal( in vec3 pos )
 					  e.xxx*map( pos + e.xxx*eps ) );
 }
     
-#define AA 3
+#define AA 10
 
 
 
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
-     // camera movement	
-	float an = 0.5*(iTime-10.0);
-	vec3 ro = vec3( 1.0*cos(an), 0.4, 1.0*sin(an) );
-    vec3 ta = vec3( 0.0, 0.0, 0.0 );
-    // camera matrix
-    vec3 ww = normalize( ta - ro );
+
+    // camera movement	
+	float angle = 0.5*(iTime-10.0);
+    float someRadius = 0.9;
+    float height = 0.0;
+
+    // fixed rotation around y 
+	vec3 cameraRayOrigin = vec3( someRadius * cos(angle), height,  someRadius * sin(angle) );
+    vec3 lookat = vec3( 0.0, 0.0, 0.0 );
+
+
+    // Get the Basis Vectors for the Camera 
+    // aka Camera Matrix
+    vec3 ww = normalize( lookat - cameraRayOrigin );
     vec3 uu = normalize( cross(ww,vec3(0.0,1.0,0.0) ) );
     vec3 vv = normalize( cross(uu,ww));
 
     
     
-    vec3 tot = vec3(0.0);
+    vec3 totalColor = vec3(0.0);
     
     #if AA>1
     for( int m=0; m<AA; m++ )
@@ -96,14 +104,16 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         #endif
 
 	    // create view ray
-        vec3 rd = normalize( p.x*uu + p.y*vv + 1.5*ww );
+        // Pixel in rd is in world coordinates
+        float distanceToVirtualScreen = 1.5;
+        vec3 rd = normalize( p.x*uu + p.y*vv + distanceToVirtualScreen*ww );
 
         // raymarch
         const float tmax = 3.0;
         float t = 0.0;
         for( int i=0; i<256; i++ )
         {
-            vec3 pos = ro + t*rd;
+            vec3 pos = cameraRayOrigin + t*rd;
             float h = map(pos);
             if( h<0.0001 || t>tmax ) break;
             t += h;
@@ -114,7 +124,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         vec3 col = vec3(0.0);
         if( t<tmax )
         {
-            vec3 pos = ro + t*rd;
+            vec3 pos = cameraRayOrigin + t*rd;
             vec3 nor = calcNormal(pos);
             float dif = clamp( dot(nor,vec3(0.7,0.6,0.4)), 0.0, 1.0 );
             float amb = 0.5 + 0.5*dot(nor,vec3(0.0,0.8,0.6));
@@ -123,13 +133,13 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
         // gamma        
         col = sqrt( col );
-	    tot += col;
+	    totalColor += col;
     #if AA>1
     }
-    tot /= float(AA*AA);
+    totalColor /= float(AA*AA);
     #endif
 
-	fragColor = vec4( tot, 1.0 );
+	fragColor = vec4( totalColor, 1.0 );
 }
 
 out vec4 f_color;
