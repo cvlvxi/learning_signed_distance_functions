@@ -46,11 +46,25 @@ float sdOctahedron(vec3 p, float s)
 #endif    
 }
 
+float sdfBox(vec3 p) 
+{
+    float boxRadius = 0.2;
+    return length(max(abs(p) - boxRadius, 0));
+
+}
+
+float sdfSphere(vec3 p)
+{
+    float sphereRadius = 0.2;    
+    // return length(p) - sphereRadius;
+    return length(p + vec3(0.0, iTime, 0.0)) - sphereRadius;
+}
 
 float map( in vec3 pos )
 {
-    float rad = 0.1*(0.5+0.5*sin(iTime*2.0));
-    return sdOctahedron(pos,0.5-rad) - rad;
+    // float rad = 0.1*(0.5+0.5*sin(iTime*2.0));
+    // return sdOctahedron(pos,0.5-rad) - rad;
+    return sdfSphere(pos);
 }
 
 // http://iquilezles.org/www/articles/normalsSDF/normalsSDF.htm
@@ -73,7 +87,8 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
 
     // camera movement	
-	float angle = 0.5*(iTime-10.0);
+	// float angle = 0.5*(iTime-10.0);
+    float angle = 0.5;
     float someRadius = 0.9;
     float height = 0.0;
 
@@ -100,6 +115,8 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         vec2 o = vec2(float(m),float(n)) / float(AA) - 0.5;
         vec2 p = (-iResolution.xy + 2.0*(fragCoord+o))/iResolution.y;
         #else    
+        // Normalizing the pixel value to a value near to -1 to 1 
+        // Conserving the aspect ratio 
         vec2 p = (-iResolution.xy + 2.0*fragCoord)/iResolution.y;
         #endif
 
