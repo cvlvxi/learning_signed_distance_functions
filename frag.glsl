@@ -64,7 +64,7 @@ float map( in vec3 pos )
 {
     // float rad = 0.1*(0.5+0.5*sin(iTime*2.0));
     // return sdOctahedron(pos,0.5-rad) - rad;
-    return min(sdfSphere(pos), sdfBox(pos));
+    return max(sdfSphere(pos), sdfBox(pos));
 }
 
 // http://iquilezles.org/www/articles/normalsSDF/normalsSDF.htm
