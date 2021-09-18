@@ -57,14 +57,14 @@ float sdfSphere(vec3 p)
 {
     float sphereRadius = 0.2;    
     // return length(p) - sphereRadius;
-    return length(p) - sphereRadius;
+    return length(p + vec3(0.2, 0.0, 0.0)) - sphereRadius;
 }
 
 float map( in vec3 pos )
 {
     // float rad = 0.1*(0.5+0.5*sin(iTime*2.0));
     // return sdOctahedron(pos,0.5-rad) - rad;
-    return sdfSphere(pos) - sdfBox(pos);
+    return min(sdfSphere(pos), sdfBox(pos));
 }
 
 // http://iquilezles.org/www/articles/normalsSDF/normalsSDF.htm
