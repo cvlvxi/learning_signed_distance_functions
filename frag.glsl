@@ -60,11 +60,17 @@ float sdfSphere(vec3 p)
     return length(p + vec3(0.2, 0.0, 0.0)) - sphereRadius;
 }
 
+float sdfExpLine( in vec3 pos, in vec3 lookup, in vec3 line );
+
 float map( in vec3 pos )
 {
     // float rad = 0.1*(0.5+0.5*sin(iTime*2.0));
     // return sdOctahedron(pos,0.5-rad) - rad;
-    return max(sdfSphere(pos), sdfBox(pos));
+    // sdfExpLine(pos, vec3(0,1,0), vec3(2,0,0));
+    // return max(sdfSphere(pos), sdfBox(pos));
+    float a = sdfExpLine(pos, vec3(0.0,1.0,0.0), vec3(2.0, -1.0, 0.0));
+    float b = sdfExpLine(pos, vec3(0.0,1.0,0.0), vec3(2.0, -1.5, 0.0));
+    return max(a, b);
 }
 
 // http://iquilezles.org/www/articles/normalsSDF/normalsSDF.htm
@@ -81,6 +87,28 @@ vec3 calcNormal( in vec3 pos )
 #define AA 10
 
 
+
+float sdfExpLine( in vec3 pos, in vec3 lookup, in vec3 line ) {
+    float lineRadius = 0.2;
+    float lineDistance = length(line);
+
+    // Calculate Basis Vector for Line
+    vec3 ww = normalize(line);
+    // vec3 uu = normalize( cross(ww, lookup) );
+    // vec3 vv = normalize( cross(ww, uu) );
+
+    // Find closest point on the line
+    float distanceOnLine = dot(ww, pos);
+    vec3 pointOnLine = ww * distanceOnLine;
+
+    // Check whether its on the line
+    float distanceBehindLine = -distanceOnLine;
+    float distanceBeyondLine = distanceOnLine - lineDistance;
+    float outsideLine = length(pointOnLine - pos) - lineRadius;
+
+
+    return max(distanceBehindLine, max(distanceBeyondLine, outsideLine));
+}
 
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
