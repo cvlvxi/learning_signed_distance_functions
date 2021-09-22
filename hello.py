@@ -33,7 +33,8 @@ class HelloWorld(Example):
         self.prog = self.ctx.program(
             vertex_shader= open('vert.glsl', 'r').read(),
             # fragment_shader= open('frag.glsl', 'r').read()
-            fragment_shader= open('sdfs/001_2d_sdf_playground.glsl', 'r').read()
+            # fragment_shader= open('sdfs/001_2d_sdf_playground.glsl', 'r').read()
+            fragment_shader = open('sdfs/002_wing.glsl', 'r').read()
         )
 
         self.prog['iResolution'] = self.window_size;

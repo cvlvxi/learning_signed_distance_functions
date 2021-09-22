@@ -4,15 +4,35 @@
 uniform float iTime;
 uniform vec2 iResolution;
 
-float sdfCircle( in vec2 pos ) {
+float sdfCircle( in vec2 pos, in float radius ) {
     // Pos in pixel land
-    float radius = 200.0;
+    // float radius = 200.0;
     return length(pos) - radius;
 }
 
 
-float sdfRectangle( in vec2 pos, in vec2 line ) {
-    float lineRadius = 10.0;
+float sdfRectangle( in vec2 pos, in vec2 rectSize ) {
+    // Intersect these two infinite line sdfs 
+    return max(abs(pos.x) - rectSize.x, abs(pos.y) - rectSize.y);
+}
+
+
+float sdfRectangle2( in vec2 pos, in vec2 rectSize) 
+{
+    // return length(max(abs(pos) - rectSize, 0));
+    return length((abs(pos) - rectSize));
+
+}
+
+float sdfLine2( in vec2 pos) {
+
+    return pos.x + pos.y;
+   
+}
+
+
+float sdfLine( in vec2 pos, in vec2 line ) {
+    float lineRadius = 200.0;
     float lineDistance = length(line);
     
     vec2 normalizedLine = normalize(line);
@@ -28,7 +48,12 @@ float sdfRectangle( in vec2 pos, in vec2 line ) {
 
 
 float sdf( in vec2 pos ) {
-    return max(sdfRectangle( pos, vec2(cos(iTime) * 100.0, 100.0) ), sdfRectangle( pos, vec2(200.0, sin(iTime) * 100.0) ));
+    // return max(sdfRectangle( pos, vec2(cos(iTime) * 100.0, 100.0) ), sdfRectangle( pos, vec2(200.0, sin(iTime) * 100.0) ));
+    // return sdfCircle(pos, 400.0);
+    // return sdfCircle(pos + vec2(-iTime, 0.0), 200.0) + sdfRectangle(pos, vec2(100.0, 100.0) );
+    // return sdfRectangle2(pos, vec2(100.0, 100.0));
+
+    return sdfLine2(pos);
 }
 
 
